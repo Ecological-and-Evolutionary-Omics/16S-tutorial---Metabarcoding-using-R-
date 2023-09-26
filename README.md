@@ -76,4 +76,5 @@ plotQualityProfile(raw_reverse[1:2])
 #to any type of selection 
 ```
 Now an image like this should be visible in your screen (!This is just an example picture don't panic :scream:, your image should look different :thumbsup:)
-![IMAGE](C:/Users/1001926/Desktop/R_quality.png)
+
+![IMAGE](R_quality.png )
