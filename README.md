@@ -4,9 +4,9 @@
 
 ## Table of Contents
 
-- [Download the tutorial data](#download the tutorial data)
-- [Installing Packages](#installing Packages)
-- [Quality Control](#quality Control)
+- [Download the tutorial data](#Download-the-tutorial-data)
+- [Installing Packages](#Installing-Packages)
+- [Quality Control](#Quality-Control)
 
 
 ## Download the tutorial data
