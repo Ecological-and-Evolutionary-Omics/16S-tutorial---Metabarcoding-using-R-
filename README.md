@@ -217,9 +217,9 @@ The SILVA database is a 16S and 18S rRNA database used for the identification an
 
 ```R
 taxa <- assignTaxonomy(seq_table_nochim,
-                       'MiSeq_SOP/silva_nr_v138_train_set.fa.gz',
+                       'silva_nr_v138_train_set.fa.gz',
                        multithread=TRUE)
-taxa <- addSpecies(taxa, 'MiSeq_SOP/silva_species_assignment_v138.fa.gz')
+taxa <- addSpecies(taxa, 'silva_species_assignment_v138.fa.gz')
 ```
 
 If you want to inspect the classification, you can use this set of commands:
