@@ -125,3 +125,46 @@ plotErrors(errors_forward, nominalQ=TRUE) +
 ```
 > [!NOTE]
 >If you are using a **Windows computer**, this process might take a longer, as the ```multithread``` option is disabled for this system
+
+### Dereplication
+
+To reduce the time of computation ```DADA2``` uses **dereplication**. This eliminates redundant comparisons by combining all identical reads into a "unique sequences" with a corresponding "abundance" for each of them.
+
+```R
+derep_forward <- derepFastq(filtered_forward, verbose=TRUE)
+derep_reverse <- derepFastq(filtered_reverse, verbose=TRUE)
+# name the derep-class objects by the sample names
+names(derep_forward) <- sample_names
+names(derep_reverse) <- sample_names
+```
+
+### Sample Inference
+
+```DADA2``` now samples some of the real sequence variants from the total of unique sequences (dereplicated data), to extract the inference needed for the algorithm
+
+>If you are not familiarized with the term _inference_ just think about it like assuming a general tendence or other type of information based on a sample
+
+```R
+dada_forward <- dada(derep_forward, err=errors_forward, multithread=TRUE)
+dada_reverse <- dada(derep_reverse, err=errors_reverse, multithread=TRUE)
+
+# inspect the dada-class object
+dada_forward[[1]]
+```
+
+### Merge Paired-end Reads
+
+The process of merging paired reads is sometimes called overlapping or assembly of read pairs. The goal of merging is to convert a pair into a single read containing one 
+sequence and one set of quality scores. A pair must overlap over a significant fraction of its length.
+
+> [!NOTE]
+> If you need more information, or you need to visualize how paired-end reads are formed. we highly recommend you this video :
+>[Illumina Paired-End Sequencing](https://www.youtube.com/watch?v=-8fG9ruvbe4&ab_channel=ZhiJ.Lu)
+
+```R
+merged_reads <- mergePairs(dada_forward, derep_forward, dada_reverse,
+                           derep_reverse, verbose=TRUE)
+
+# inspect the merger data.frame from the first sample
+head(merged_reads[[1]])
+```
