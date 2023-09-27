@@ -9,7 +9,7 @@
 - [Quality Control](#Quality-Control)
 - [DADA2](#DADA2)
 - [Assign Taxonomy](#Assign-Taxonomy)
-- [Phylogenetic Tree](Phylogenetic-Tree)
+- [Phylogenetic Tree](Phylogenetic-tree)
 ## Download the tutorial data
 
 :heavy_exclamation_mark: The next data can be downloaded manually if you are not using shell by searching the links shown in the next commands
