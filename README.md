@@ -7,7 +7,7 @@
 - [Download the tutorial data](#Download-the-tutorial-data)
 - [Installing Packages](#Installing-Packages)
 - [Quality Control](#Quality-Control)
-
+- [DADA2](#DADA2)
 
 ## Download the tutorial data
 
