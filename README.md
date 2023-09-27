@@ -78,3 +78,50 @@ plotQualityProfile(raw_reverse[1:2])
 Now an image like this should be visible in your screen (!This is just an example picture don't panic :scream:, your image should look different :thumbsup:)
 
 ![IMAGE](R_quality.png )
+
+### Trimming
+
+Before Trimming we should also create a filtered directory to save our trimmed samples.
+
+We are also creating a list of names with the end "trimmed", this list will be helpfull when
+automating the process for different samples
+
+```R
+# place filtered files in filtered/ subdirectory
+filtered_path <- file.path(path, "filtered")
+
+filtered_forward <- file.path(paste0(sample_names, "_R1_trimmed.fastq.gz"))
+
+filtered_reverse <- file.path(paste0(sample_names, "_R2_trimmed.fastq.gz"))
+```
+
+Once we have taken a look to our reads, we can determine which will be the ranges to trim. Take into account that we have to take into account both at the R1 and R2 graphics to make the decision,
+as the trimming should be equal for both reads. Once we have selected the regions to trim, we can execute the next code:
+
+> [!IMPORTANT]
+>In ```truncLen```we should mark the last and the first nucleotide after the trimming , **in that order**.
+
+```R
+out <- filterAndTrim(raw_forward, filtered_forward, raw_reverse,
+                     filtered_reverse, truncLen=c(240,160), maxN=0,
+                     maxEE=c(2,2), truncQ=2, rm.phix=TRUE, compress=TRUE,
+                     multithread=TRUE)
+head(out)
+```
+
+
+## DADA2
+
+DADA2 is the main package that we will be using for the 16S analysis, it is based on al algorithm that depends on a parametric error model
+and every amplicon dataset has a slightly different error rate. Therefore, we need to learn the errors for our forward and reverse reads.
+
+```R
+errors_forward <- learnErrors(filtered_forward, multithread=TRUE)
+errors_reverse <- learnErrors(filtered_reverse, multithread=TRUE)
+
+#you can visualize the estimated error rates with this command
+plotErrors(errors_forward, nominalQ=TRUE) +
+    theme_minimal()
+```
+> [!NOTE]
+>If you are using a **Windows computer**, this process might take a longer, as the ```multithread``` option is disabled for this system
