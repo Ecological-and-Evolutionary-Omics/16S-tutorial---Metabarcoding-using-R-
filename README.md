@@ -168,3 +168,45 @@ merged_reads <- mergePairs(dada_forward, derep_forward, dada_reverse,
 # inspect the merger data.frame from the first sample
 head(merged_reads[[1]])
 ```
+### Construct Sequence Table
+
+The sequence table is a higher-resolution version of the OTU table produced by traditional methods.
+
+```R
+seq_table <- makeSequenceTable(merged_reads)
+dim(seq_table)
+
+# inspect distribution of sequence lengths
+table(nchar(getSequences(seq_table)))
+```
+
+### Remove Chimeras
+
+>[!NOTE]
+>Chimeras are artifact sequences formed by two or more biological sequences incorrectly joined together. This often occurs during PCR reactions using mixed templates 
+>(i.e., uncultured environmental samples)
+
+During this process we have already remove substitutions and indel errors but chimeras reamin and we need to remove them. Use the next commands to make it.
+
+```R
+seq_table_nochim <- removeBimeraDenovo(seq_table, method='consensus',
+                                       multithread=TRUE, verbose=TRUE)
+dim(seq_table_nochim)
+
+# which percentage of our reads did we keep?
+sum(seq_table_nochim) / sum(seq_table)
+```
+
+check how many reads made it through each step during this pipeline
+
+```R
+get_n <- function(x) sum(getUniques(x))
+
+track <- cbind(out, sapply(dada_forward, get_n), sapply(merged_reads, get_n),
+               rowSums(seq_table), rowSums(seq_table_nochim))
+
+colnames(track) <- c('input', 'filtered', 'denoised', 'merged', 'tabled',
+                     'nonchim')
+rownames(track) <- sample_names
+head(track)
+```
