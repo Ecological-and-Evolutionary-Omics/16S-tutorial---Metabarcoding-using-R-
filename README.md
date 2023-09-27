@@ -9,7 +9,8 @@
 - [Quality Control](#Quality-Control)
 - [DADA2](#DADA2)
 - [Assign Taxonomy](#Assign-Taxonomy)
-- [Phylogenetic Tree](Phylogenetic-tree)
+- [Phylogenetic Tree](#Phylogenetic-tree)
+- [Phyloseq](#Phyloseq)
 ## Download the tutorial data
 
 :heavy_exclamation_mark: The next data can be downloaded manually if you are not using shell by searching the links shown in the next commands
@@ -248,6 +249,73 @@ dm <- dist.ml(phang_align)
 treeNJ <- NJ(dm)  # note, tip order != sequence order
 fit = pml(treeNJ, data=phang_align)
 
+## Phyloseq
+
+To use the Phyloseq first we need to load the metadata. The metadatafile is a file were a summary of the information regarding the samples is
+displayed. For this tutorial you have at your disposal the metadata.txt [here](https://hadrieng.github.io/tutorials/data/16S_metadata.txt)
+This metadatafile is only usable for this tutorial, remember that for every set of samples there is a metadata file linked to them, so **they are unique
+and untransferable**. Now, let's construct the phyloseq object from our output and newly created metadata.
+
+```R
+sample_data <- read.table('16S_metadata.txt',header=TRUE, row.names="sample_name")
+
+physeq <- phyloseq(otu_table(seq_table_nochim, taxa_are_rows=FALSE),
+                   sample_data(sample_data),
+                   tax_table(taxa),
+                   phy_tree(fitGTR$tree))
+# remove mock sample
+physeq <- prune_samples(sample_names(physeq) != 'Mock', physeq)
+physeq
+```
+### Alpha diversity
+
+>Alpha diversity refers to diversity on a local scale, describing the species diversity (richness) within a functional community. 
+```R
+plot_richness(physeq, x='day', measures=c('Shannon', 'Fisher'), color='when') +
+    theme_minimal()
+```
+
+### Beta diversity
+
+>Beta diversity is defined as the extent of change in community composition, or degree of community differentiation, in relation 
+>to a complex-gradient of environment, or a pattern of environments.
+
+We can perform an MDS (multidimensional scaling) with euclidean distance or with Bray-Curtis distance. This transformations allow
+us to see in a clearer way the differences between our samples.
+
+```R
+#for Euclidean
+ord <- ordinate(physeq, 'MDS', 'euclidean')
+plot_ordination(physeq, ord, type='samples', color='when',
+                title='PCA of the samples from the MiSeq SOP') +
+    theme_minimal()
+
+#for Bray-Curtis
+ord <- ordinate(physeq, 'NMDS', 'bray')
+plot_ordination(physeq, ord, type='samples', color='when',
+                title='PCA of the samples from the MiSeq SOP') +
+    theme_minimal()
+```
+
+### Distribution of the most abundant families
+
+We can make a barplot that displays the distribution of the families analyzed
+```R
+top20 <- names(sort(taxa_sums(physeq), decreasing=TRUE))[1:20]
+physeq_top20 <- transform_sample_counts(physeq, function(OTU) OTU/sum(OTU))
+physeq_top20 <- prune_taxa(top20, physeq_top20)
+plot_bar(physeq_top20, x='day', fill='Family') +
+    facet_wrap(~when, scales='free_x') +
+    theme_minimal()
+```
+
+We can also place them in Tree
+
+```R
+bacteroidetes <- subset_taxa(physeq, Phylum %in% c('Bacteroidetes'))
+plot_tree(bacteroidetes, ladderize='left', size='abundance',
+          color='when', label.tips='Family')
+```
 ## negative edges length changed to 0!
 
 fitGTR <- update(fit, k=4, inv=0.2)
