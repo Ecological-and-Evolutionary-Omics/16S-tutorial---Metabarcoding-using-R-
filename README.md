@@ -75,7 +75,7 @@ plotQualityProfile(raw_reverse[1:2])
 #you can change the number of samples shown by changing the [1:2] parameter
 #to any type of selection 
 ```
-Now an image like this should be visible in your screen (!This is just an example picture don't panic :scream:, your image should look different :thumbsup:)
+Now an image like this should be visible in your screen (:warning: This is just an example picture don't panic :scream:, your image should look different :thumbsup:)
 
 ![IMAGE](R_quality.png )
 
