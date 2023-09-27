@@ -8,7 +8,8 @@
 - [Installing Packages](#Installing-Packages)
 - [Quality Control](#Quality-Control)
 - [DADA2](#DADA2)
-
+- [Assign Taxonomy](#Assign-Taxonomy)
+- [Phylogenetic Tree](Phylogenetic-Tree)
 ## Download the tutorial data
 
 :heavy_exclamation_mark: The next data can be downloaded manually if you are not using shell by searching the links shown in the next commands
@@ -209,4 +210,49 @@ colnames(track) <- c('input', 'filtered', 'denoised', 'merged', 'tabled',
                      'nonchim')
 rownames(track) <- sample_names
 head(track)
+```
+## Assign Taxonomy
+
+The SILVA database is a 16S and 18S rRNA database used for the identification and classification of microorganisms
+
+```R
+taxa <- assignTaxonomy(seq_table_nochim,
+                       'MiSeq_SOP/silva_nr_v138_train_set.fa.gz',
+                       multithread=TRUE)
+taxa <- addSpecies(taxa, 'MiSeq_SOP/silva_species_assignment_v138.fa.gz')
+```
+
+If you want to inspect the classification, you can use this set of commands:
+
+```R
+taxa_print <- taxa  # removing sequence rownames for display only
+rownames(taxa_print) <- NULL
+head(taxa_print)
+```
+
+## Phylogenetic Tree
+
+DADA2 is a reference-free program so we have to build the phylogenetic Tree by ourselves,
+We will be using a maximum-likelihood tree build with a neighbour-joining tree as a starting point.
+But first, let's align our sequences.
+
+```R
+sequences <- getSequences(seq_table)
+names(sequences) <- sequences  # this propagates to the tip labels of the tree
+alignment <- AlignSeqs(DNAStringSet(sequences), anchor=NA)
+```
+
+```R
+phang_align <- phyDat(as(alignment, 'matrix'), type='DNA')
+dm <- dist.ml(phang_align)
+treeNJ <- NJ(dm)  # note, tip order != sequence order
+fit = pml(treeNJ, data=phang_align)
+
+## negative edges length changed to 0!
+
+fitGTR <- update(fit, k=4, inv=0.2)
+fitGTR <- optim.pml(fitGTR, model='GTR', optInv=TRUE, optGamma=TRUE,
+                    rearrangement = 'stochastic',
+                    control = pml.control(trace = 0))
+detach('package:phangorn', unload=TRUE)
 ```
