@@ -257,7 +257,7 @@ This metadatafile is only usable for this tutorial, remember that for every set 
 and untransferable**. Now, let's construct the phyloseq object from our output and newly created metadata.
 
 ```R
-sample_data <- read.table('16S_metadata.txt',header=TRUE, row.names="sample_name")
+sample_data <- read.table(16S_metadata.txt,header=TRUE, row.names="sample_name")
 
 physeq <- phyloseq(otu_table(seq_table_nochim, taxa_are_rows=FALSE),
                    sample_data(sample_data),
@@ -315,12 +315,4 @@ We can also place them in Tree
 bacteroidetes <- subset_taxa(physeq, Phylum %in% c('Bacteroidetes'))
 plot_tree(bacteroidetes, ladderize='left', size='abundance',
           color='when', label.tips='Family')
-```
-## negative edges length changed to 0!
-
-fitGTR <- update(fit, k=4, inv=0.2)
-fitGTR <- optim.pml(fitGTR, model='GTR', optInv=TRUE, optGamma=TRUE,
-                    rearrangement = 'stochastic',
-                    control = pml.control(trace = 0))
-detach('package:phangorn', unload=TRUE)
 ```
