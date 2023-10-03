@@ -44,6 +44,15 @@ install.packages('ggplot2')
 install.packages('phangorn')
 ```
 
+**don't forget to activate the libraries**
+```{r load_pkg}
+library(dada2)
+library(ggplot2)
+library(phyloseq)
+library(phangorn)
+library(DECIPHER)
+```
+
 ## Quality Control
 
 Quality Control of the samples can be performed using R or using the Shell scripts explained in the [Quality Control turorial](https://github.com/Ecological-and-Evolutionary-Omics/Quality-and-Trimming)
@@ -101,7 +110,7 @@ Once we have taken a look to our reads, we can determine which will be the range
 as the trimming should be equal for both reads. Once we have selected the regions to trim, we can execute the next code:
 
 > [!IMPORTANT]
->In ```truncLen```we should mark the last and the first nucleotide after the trimming , **in that order**.
+>In ```truncLen```we should mark the last nucleotide that will remain in the forward (R1) and then the reverse (R2), **in that order**.
 
 ```R
 out <- filterAndTrim(raw_forward, filtered_forward, raw_reverse,
