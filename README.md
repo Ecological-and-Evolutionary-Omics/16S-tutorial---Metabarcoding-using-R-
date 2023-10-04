@@ -257,7 +257,7 @@ phang_align <- phyDat(as(alignment, 'matrix'), type='DNA')
 dm <- dist.ml(phang_align)
 treeNJ <- NJ(dm)  # note, tip order != sequence order
 fit = pml(treeNJ, data=phang_align)
-
+```
 ## Phyloseq
 
 To use the Phyloseq first we need to load the metadata. The metadatafile is a file were a summary of the information regarding the samples is
